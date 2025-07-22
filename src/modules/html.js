@@ -10,7 +10,7 @@
 import { jsPDF } from "../jspdf.js";
 import { normalizeFontFace } from "../libs/fontFace.js";
 import { globalObject } from "../libs/globalObject.js";
-import { snapdom } from "@zumer/snapdom"
+import { snapdom } from "@zumer/snapdom";
 
 /**
  * jsPDF html PlugIn
@@ -18,11 +18,11 @@ import { snapdom } from "@zumer/snapdom"
  * @name html
  * @module
  */
-(function (jsPDFAPI) {
+(function(jsPDFAPI) {
   "use strict";
 
   function loadHtml2Canvas() {
-    return (function () {
+    return (function() {
       if (globalObject["html2canvas"]) {
         return Promise.resolve(globalObject["html2canvas"]);
       }
@@ -33,7 +33,7 @@ import { snapdom } from "@zumer/snapdom"
 
       // @if MODULE_FORMAT!='es'
       if (typeof exports === "object" && typeof module !== "undefined") {
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
           try {
             resolve(require("html2canvas"));
           } catch (e) {
@@ -42,7 +42,7 @@ import { snapdom } from "@zumer/snapdom"
         });
       }
       if (typeof define === "function" && define.amd) {
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
           try {
             require(["html2canvas"], resolve);
           } catch (e) {
@@ -53,16 +53,16 @@ import { snapdom } from "@zumer/snapdom"
       return Promise.reject(new Error("Could not load html2canvas"));
       // @endif
     })()
-      .catch(function (e) {
+      .catch(function(e) {
         return Promise.reject(new Error("Could not load html2canvas: " + e));
       })
-      .then(function (html2canvas) {
+      .then(function(html2canvas) {
         return html2canvas.default ? html2canvas.default : html2canvas;
       });
   }
 
   function loadDomPurify() {
-    return (function () {
+    return (function() {
       if (globalObject["DOMPurify"]) {
         return Promise.resolve(globalObject["DOMPurify"]);
       }
@@ -73,7 +73,7 @@ import { snapdom } from "@zumer/snapdom"
 
       // @if MODULE_FORMAT!='es'
       if (typeof exports === "object" && typeof module !== "undefined") {
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
           try {
             resolve(require("dompurify"));
           } catch (e) {
@@ -82,7 +82,7 @@ import { snapdom } from "@zumer/snapdom"
         });
       }
       if (typeof define === "function" && define.amd) {
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
           try {
             require(["dompurify"], resolve);
           } catch (e) {
@@ -93,10 +93,10 @@ import { snapdom } from "@zumer/snapdom"
       return Promise.reject(new Error("Could not load dompurify"));
       // @endif
     })()
-      .catch(function (e) {
+      .catch(function(e) {
         return Promise.reject(new Error("Could not load dompurify: " + e));
       })
-      .then(function (dompurify) {
+      .then(function(dompurify) {
         return dompurify.default ? dompurify.default : dompurify;
       });
   }
@@ -107,7 +107,7 @@ import { snapdom } from "@zumer/snapdom"
    * @private
    * @ignore
    */
-  var objType = function (obj) {
+  var objType = function(obj) {
     var type = typeof obj;
     if (type === "undefined") return "undefined";
     else if (type === "string" || obj instanceof String) return "string";
@@ -125,7 +125,7 @@ import { snapdom } from "@zumer/snapdom"
    * @private
    * @ignore
    */
-  var createElement = function (tagName, opt) {
+  var createElement = function(tagName, opt) {
     var el = document.createElement(tagName);
     if (opt.className) el.className = opt.className;
     if (opt.innerHTML && opt.dompurify) {
@@ -143,7 +143,7 @@ import { snapdom } from "@zumer/snapdom"
    * @private
    * @ignore
    */
-  var cloneNode = function (node, javascriptEnabled) {
+  var cloneNode = function(node, javascriptEnabled) {
     // Recursively clone the node.
     var clone =
       node.nodeType === 3
@@ -172,7 +172,7 @@ import { snapdom } from "@zumer/snapdom"
       // Preserve the node's scroll position when it loads.
       clone.addEventListener(
         "load",
-        function () {
+        function() {
           clone.scrollTop = node.scrollTop;
           clone.scrollLeft = node.scrollLeft;
         },
@@ -220,7 +220,7 @@ import { snapdom } from "@zumer/snapdom"
       img: null,
       pdf: null,
       pageSize: null,
-      callback: function () { }
+      callback: function() {}
     },
     progress: {
       val: 0,
@@ -258,7 +258,7 @@ import { snapdom } from "@zumer/snapdom"
       type = type || getType(src);
       switch (type) {
         case "string":
-          return this.then(loadDomPurify).then(function (dompurify) {
+          return this.then(loadDomPurify).then(function(dompurify) {
             return this.set({
               src: createElement("div", {
                 innerHTML: src,
@@ -322,15 +322,15 @@ import { snapdom } from "@zumer/snapdom"
         display: "inline-block",
         width:
           (typeof this.opt.width === "number" &&
-            !isNaN(this.opt.width) &&
-            typeof this.opt.windowWidth === "number" &&
-            !isNaN(this.opt.windowWidth)
+          !isNaN(this.opt.width) &&
+          typeof this.opt.windowWidth === "number" &&
+          !isNaN(this.opt.windowWidth)
             ? this.opt.windowWidth
             : Math.max(
-              this.prop.src.clientWidth,
-              this.prop.src.scrollWidth,
-              this.prop.src.offsetWidth
-            )) + "px",
+                this.prop.src.clientWidth,
+                this.prop.src.scrollWidth,
+                this.prop.src.offsetWidth
+              )) + "px",
         left: 0,
         right: 0,
         top: 0,
@@ -398,28 +398,30 @@ import { snapdom } from "@zumer/snapdom"
     ];
 
     // Fulfill prereqs then create the canvas.
-    return this.thenList(prereqs)
-      // .then(loadHtml2Canvas)
-      .then(function toCanvas_main() {
-        // Handle old-fashioned 'onrendered' argument.
-        var options = Object.assign({}, this.opt.html2canvas);
-        delete options.onrendered;
+    return (
+      this.thenList(prereqs)
+        // .then(loadHtml2Canvas)
+        .then(function toCanvas_main() {
+          // Handle old-fashioned 'onrendered' argument.
+          var options = Object.assign({}, this.opt.html2canvas);
+          delete options.onrendered;
 
-        // return html2canvas(this.prop.container, options);
-        return snapdom(this.prop.container, {
-          width: options.width,
-          height: options.height,
-          scale: options.scale,
-        }).then((result) => result.toCanvas());
-      })
-      .then(function toCanvas_post(canvas) {
-        // Handle old-fashioned 'onrendered' argument.
-        var onRendered = this.opt.html2canvas.onrendered || function () { };
-        onRendered(canvas);
+          // return html2canvas(this.prop.container, options);
+          return snapdom(this.prop.container, {
+            width: options.width,
+            height: options.height,
+            scale: options.scale
+          }).then(result => result.toCanvas());
+        })
+        .then(function toCanvas_post(canvas) {
+          // Handle old-fashioned 'onrendered' argument.
+          var onRendered = this.opt.html2canvas.onrendered || function() {};
+          onRendered(canvas);
 
-        this.prop.canvas = canvas;
-        document.body.removeChild(this.prop.overlay);
-      });
+          this.prop.canvas = canvas;
+          document.body.removeChild(this.prop.overlay);
+        })
+    );
   };
 
   Worker.prototype.toContext2d = function toContext2d() {
@@ -443,9 +445,9 @@ import { snapdom } from "@zumer/snapdom"
 
         var scale =
           typeof this.opt.width === "number" &&
-            !isNaN(this.opt.width) &&
-            typeof this.opt.windowWidth === "number" &&
-            !isNaN(this.opt.windowWidth)
+          !isNaN(this.opt.width) &&
+          typeof this.opt.windowWidth === "number" &&
+          !isNaN(this.opt.windowWidth)
             ? this.opt.width / this.opt.windowWidth
             : 1;
 
@@ -480,7 +482,7 @@ import { snapdom } from "@zumer/snapdom"
         if (fontFaces) {
           for (var i = 0; i < fontFaces.length; ++i) {
             var font = fontFaces[i];
-            var src = font.src.find(function (src) {
+            var src = font.src.find(function(src) {
               return src.format === "truetype";
             });
 
@@ -494,10 +496,10 @@ import { snapdom } from "@zumer/snapdom"
         options.windowHeight =
           options.windowHeight == 0
             ? Math.max(
-              this.prop.container.clientHeight,
-              this.prop.container.scrollHeight,
-              this.prop.container.offsetHeight
-            )
+                this.prop.container.clientHeight,
+                this.prop.container.scrollHeight,
+                this.prop.container.offsetHeight
+              )
             : options.windowHeight;
 
         pdf.context2d.save(true);
@@ -507,7 +509,7 @@ import { snapdom } from "@zumer/snapdom"
         this.opt.jsPDF.context2d.restore(true);
 
         // Handle old-fashioned 'onrendered' argument.
-        var onRendered = this.opt.html2canvas.onrendered || function () { };
+        var onRendered = this.opt.html2canvas.onrendered || function() {};
         onRendered(canvas);
 
         this.prop.canvas = canvas;
@@ -648,7 +650,7 @@ import { snapdom } from "@zumer/snapdom"
     }
 
     // Build an array of setter functions to queue.
-    var fns = Object.keys(opt || {}).map(function (key) {
+    var fns = Object.keys(opt || {}).map(function(key) {
       if (key in Worker.template.prop) {
         // Set pre-defined properties.
         return function set_prop() {
@@ -838,7 +840,7 @@ import { snapdom } from "@zumer/snapdom"
     return self;
   };
 
-  Worker.prototype["catch"] = function (onRejected) {
+  Worker.prototype["catch"] = function(onRejected) {
     // Bind `this` to the promise handler, call `catch`, and return a Worker.
     if (onRejected) {
       onRejected = onRejected.bind(this);
@@ -867,7 +869,7 @@ import { snapdom } from "@zumer/snapdom"
   Worker.prototype.run = Worker.prototype.then;
 
   // Get dimensions of a PDF page, as determined by jsPDF.
-  jsPDF.getPageSize = function (orientation, unit, format) {
+  jsPDF.getPageSize = function(orientation, unit, format) {
     // Decode options object
     if (typeof orientation === "object") {
       var options = orientation;
@@ -1073,11 +1075,11 @@ import { snapdom } from "@zumer/snapdom"
    *    y: 10
    * });
    */
-  jsPDFAPI.html = function (src, options) {
+  jsPDFAPI.html = function(src, options) {
     "use strict";
 
     options = options || {};
-    options.callback = options.callback || function () { };
+    options.callback = options.callback || function() {};
     options.html2canvas = options.html2canvas || {};
     options.html2canvas.canvas = options.html2canvas.canvas || this.canvas;
     options.jsPDF = options.jsPDF || this;
