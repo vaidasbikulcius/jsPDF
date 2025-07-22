@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.26.7",
+    "@zumer/snapdom": "^1.9.6",
     "atob": "^2.1.2",
     "btoa": "^1.2.1",
     "fflate": "^0.8.1"
